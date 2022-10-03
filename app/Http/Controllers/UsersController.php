@@ -5,12 +5,13 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use App\Traits\SendResponse;
+use App\Traits\Pagination;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
 
 class UsersController extends Controller
 {
-    use SendResponse;
+    use SendResponse,Pagination;
 
     public function addUser(Request $request){
         $request= $request->json()->all();

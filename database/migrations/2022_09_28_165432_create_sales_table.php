@@ -19,7 +19,6 @@ return new class extends Migration
             $table->string("client_phone");
             $table->string("code_invoices");
             $table->double("total_price");
-            $table->text("notes");
             $table->bigInteger('stores_id')->unsigned();
             $table->foreign('stores_id')->references('id')->on('stores');
 

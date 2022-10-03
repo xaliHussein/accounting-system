@@ -1,6 +1,10 @@
 <?php
 
 use App\Http\Controllers\UsersController;
+use App\Http\Controllers\GoodsController;
+use App\Http\Controllers\DebtRecordsController;
+use App\Http\Controllers\StoreController;
+use App\Http\Controllers\SalesController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -18,3 +22,12 @@ use Illuminate\Support\Facades\Route;
 Broadcast::routes(['middleware' => ['auth:api']]);
 route::post('add_user',[UsersController::class,'addUser']);
 route::post('login',[UsersController::class,'login']);
+
+Route::middleware(['auth:api'])->group(function () {
+    route::post('add_goods',[GoodsController::class,'addGoods']);
+    route::get('get_goods',[GoodsController::class,'getGoods']);
+    route::get('get_goods_barcode',[GoodsController::class,'getGoodsBarcode']);
+
+    route::get('get_sales',[SalesController::class,'getSales']);
+    route::post('add_sales',[SalesController::class,'addSales']);
+});

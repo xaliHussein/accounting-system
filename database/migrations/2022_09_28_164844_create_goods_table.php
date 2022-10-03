@@ -17,7 +17,7 @@ return new class extends Migration
             $table->id();
             $table->string("name");
             $table->string("quantity");
-            $table->string("product_code")->nallable();
+            $table->string("product_code");
             $table->double("buy_price");
             $table->double("sale_price");
             $table->string("company");
