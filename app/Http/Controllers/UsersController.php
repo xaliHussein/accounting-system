@@ -8,6 +8,7 @@ use App\Traits\SendResponse;
 use App\Traits\Pagination;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 
 class UsersController extends Controller
 {
@@ -56,6 +57,24 @@ class UsersController extends Controller
             $user=auth()->user();
                 $token= $user->createToken('accounting_system')->accessToken;
                 return $this->send_response(200,'تم تسجيل الدخول بنجاح',[], $user, $token);
+        }else{
+            return $this->send_response(400, 'هناك مشكلة تحقق من تطابق المدخلات', null, null, null);
+        }
+    }
+    public function chackPassword(Request $request){
+        $request = $request->json()->all();
+        $validator = Validator::make($request,[
+            'user_name'=>'required',
+            'password'=>'required'
+        ],[
+            'user_name.required'=>'اسم المستخدم مطلوب',
+            'password.required'=>'كلمة المرور مطلوبة'
+        ]);
+         if($validator->fails()){
+            return $this->send_response(400,'فشل عملية تسجيل الدخول',$validator->errors(),[]);
+        }
+        if(Hash::check($request['password'],auth()->user()->password ) && $request['user_name'] == auth()->user()->user_name){
+            return $this->send_response(200,'تم تسجيل الدخول بنجاح',[],[]);
         }else{
             return $this->send_response(400, 'هناك مشكلة تحقق من تطابق المدخلات', null, null, null);
         }

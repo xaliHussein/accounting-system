@@ -18,7 +18,7 @@ class SalesController extends Controller
     use SendResponse, Pagination;
     public function random_code()
     {
-        $code = substr(str_shuffle("0123456789"), 0, 6);
+        $code = substr(str_shuffle("0123456789"), 0, 8);
         $get = Sales::where('code_invoices', $code)->first();
         if ($get) {
             return $this->random_code();
@@ -30,6 +30,38 @@ class SalesController extends Controller
     // احضار جميع المبيعات
     public function getSales()
     {
+         if (isset($_GET["sales_id"])) {
+            $goods = GoodSales::where('sales_id', $_GET["sales_id"]);
+            if (isset($_GET['query'])) {
+                $goods->where(function ($q) {
+                    $columns = Schema::getColumnListing('goods');
+                    foreach ($columns as $column) {
+                        $q->orWhere($column, 'LIKE', '%' . $_GET['query'] . '%');
+                    }
+                });
+            }
+            if (isset($_GET)) {
+                foreach ($_GET as $key => $value) {
+                    if ($key == 'skip' || $key == 'limit' || $key == 'query' || $key == 'invoice_id') {
+                        continue;
+                    } else {
+                        $sort = $value == 'true' ? 'desc' : 'asc';
+                        $goods->orderBy($key,  $sort);
+                    }
+                }
+            }
+            if (!isset($_GET['skip']))
+                $_GET['skip'] = 0;
+            if (!isset($_GET['limit']))
+                $_GET['limit'] = 10;
+            $res = $this->paging($goods,  $_GET['skip'],  $_GET['limit']);
+            if ($goods) {
+                return $this->send_response(200, 'تم جلب الفواتير بنجاح', [], $res["model"], null, $res["count"]);
+            } else {
+                return $this->send_response(404, 'لا يوجد فاتورة بهذا الرقم', [], []);
+            }
+        }
+
         $Sales = Sales::where("stores_id", auth()->user()->store->id);
         if (isset($_GET['filter'])) {
             $filter = json_decode($_GET['filter']);
@@ -91,10 +123,17 @@ class SalesController extends Controller
             $good->update([
                 'quantity' => $good->quantity - $good_id['quantity']
             ]);
-            $total_price += $good->buy_price * $good_id['quantity'];
+            $total_price += $good->sale_price * $good_id['quantity'];
         }
-
         $data['total_price'] = $total_price;
+
+         if($request['debt_record'] == 0){
+            $data['debt_record'] = 0;
+            $data['total_debt'] = 0;
+        }else{
+            $data['debt_record'] = 1;
+            $data['total_debt'] = $total_price;
+        }
         $sales = Sales::create($data);
         foreach ($goods_id as $key => $good_id) {
             GoodSales::create([

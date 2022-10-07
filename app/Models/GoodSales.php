@@ -10,8 +10,9 @@ class GoodSales extends Model
     use HasFactory;
      protected $table = 'good_sales';
      protected $guarded = [];
+     protected $with = ['goods'];
 
-    public function good(){
-        return $this->belongsTo(Goods::class, 'good_id');
+    public function goods(){
+        return $this->belongsTo(Goods::class, 'goods_id');
     }
 }

@@ -24,10 +24,15 @@ route::post('add_user',[UsersController::class,'addUser']);
 route::post('login',[UsersController::class,'login']);
 
 Route::middleware(['auth:api'])->group(function () {
+    route::post('chack_password',[UsersController::class,'chackPassword']);
+
     route::post('add_goods',[GoodsController::class,'addGoods']);
     route::get('get_goods',[GoodsController::class,'getGoods']);
     route::get('get_goods_barcode',[GoodsController::class,'getGoodsBarcode']);
+    route::put('edit_goods',[GoodsController::class,'editGoods']);
+    route::delete('delete_goods',[GoodsController::class,'deleteGoods']);
 
     route::get('get_sales',[SalesController::class,'getSales']);
     route::post('add_sales',[SalesController::class,'addSales']);
+    route::put('edit_sales',[SalesController::class,'EditSales']);
 });

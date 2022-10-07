@@ -22,6 +22,7 @@ class GoodsController extends Controller
             'quantity' => 'required|numeric',
             'buy_price' => 'required|numeric',
             'sale_price' => 'required|numeric',
+            'product_code' => 'unique:goods,product_code',
             'company' => 'max:255',
         ]);
         if ($validator->fails()) {
@@ -88,7 +89,7 @@ class GoodsController extends Controller
 
     }
 
-    public function updateGoods(Request $request)
+    public function editGoods(Request $request)
     {
         $request = $request->json()->all();
         $validator = Validator::make($request, [
@@ -97,14 +98,14 @@ class GoodsController extends Controller
             'quantity' => 'required|numeric',
             'buy_price' => 'required|numeric',
             'sale_price' => 'required|numeric',
-            'company' => 'required|string|max:255',
-            'product_code' => 'required',
+            'product_code' => 'unique:goods,product_code,'.$request['id'],
+            'company' => 'max:255',
         ]);
         if ($validator->fails()) {
             return $this->send_response(400, 'خطأ في المدخلات', $validator->errors(), []);
         }
-        $good = Good::find($request['id']);
-        if (auth()->user()->id != $good->user_id)
+        $good = Goods::find($request['id']);
+        if (auth()->user()->store->id != $good->stores_id)
             return $this->send_response(400, 'لا يمكنك تعديل بيانات هذا المنتج', [], []);
         $good->update([
             'name' => $request['name'],
@@ -114,6 +115,21 @@ class GoodsController extends Controller
             'company' => $request['company'],
             'product_code' => $request['product_code'],
         ]);
-        return $this->send_response(200, 'تمت عملية التعديل بنجاح', [], Good::find($request['id']));
+        return $this->send_response(200, 'تمت عملية التعديل بنجاح', [], Goods::find($request['id']));
+    }
+     public function deleteGoods(Request $request)
+    {
+        $request = $request->json()->all();
+        $validator = Validator::make($request, [
+            "id" => "required|exists:goods,id",
+        ]);
+        if ($validator->fails()) {
+            return $this->send_response(400, 'خطأ في المدخلات', $validator->errors(), []);
+        }
+        $good = Goods::find($request['id']);
+        if (auth()->user()->store->id != $good->stores_id)
+            return $this->send_response(400, 'لا يمكنك حذف هذا المنتج', [], []);
+        $good->delete();
+        return $this->send_response(200, 'تمت عملية الحذف بنجاح', [], []);
     }
 }

@@ -14,12 +14,10 @@ return new class extends Migration
     public function up()
     {
         Schema::create('good_sales', function (Blueprint $table) {
-            $table->id();
+         $table->id();
             $table->bigInteger('goods_id')->unsigned();
-            $table->foreign('goods_id')->references('id')->on('goods');
             $table->bigInteger('sales_id')->unsigned();
-            $table->foreign('sales_id')->references('id')->on('sales');
-             $table->string("quantity");
+            $table->string("quantity");
             $table->timestamps();
         });
     }
@@ -31,6 +29,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('good_sales');
+        //
     }
 };
