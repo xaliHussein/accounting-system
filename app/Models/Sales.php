@@ -9,4 +9,9 @@ class Sales extends Model
 {
     use HasFactory;
     protected $guarded = [];
+    protected $with = ['good_sales'];
+
+    public function good_sales(){
+        return $this->hasMany(GoodSales::class,'sales_id');
+    }
 }

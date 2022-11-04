@@ -15,6 +15,7 @@ class GoodsController extends Controller
 {
     use SendResponse,Pagination;
 
+    // اضافة بضائع الى المخزن
     public function addGoods(Request $request){
         $request = $request->json()->all();
         $validator = Validator::make($request, [
@@ -35,15 +36,16 @@ class GoodsController extends Controller
             'sale_price' => $request['sale_price'],
             'company' => $request['company'],
             'product_code' => $request['product_code'],
-            'stores_id' => auth()->user()->store->id,
+            'stores_id' => auth()->user()->store[0]->id,
         ]);
 
         return $this->send_response(200, 'تمت عملية الاضافة بنجاح', [], $good);
     }
 
+    // احضار البضائع
     public function getGoods()
     {
-        $goods = Goods::where("stores_id", auth()->user()->store->id);
+        $goods = Goods::where("stores_id", auth()->user()->store[0]->id);
         if (isset($_GET['filter'])) {
             $filter = json_decode($_GET['filter']);
             // return $filter;
@@ -74,9 +76,10 @@ class GoodsController extends Controller
         $res = $this->paging($goods,  $_GET['skip'],  $_GET['limit']);
         return $this->send_response(200, 'تم جلب البضاعة بنجاح', [], $res["model"], null, $res["count"]);
     }
+    // احضار البضائع بواسطة الباركود
     public function getGoodsBarcode()
     {
-        $goods = Goods::where("stores_id", auth()->user()->store->id);
+        $goods = Goods::where("stores_id", auth()->user()->store[0]->id);
             if (isset($_GET['query'])) {
                 $goods->where('product_code','=',$_GET['query']);
             if (!isset($_GET['skip']))
@@ -89,6 +92,7 @@ class GoodsController extends Controller
 
     }
 
+    // تعديل البضائع
     public function editGoods(Request $request)
     {
         $request = $request->json()->all();
@@ -105,7 +109,7 @@ class GoodsController extends Controller
             return $this->send_response(400, 'خطأ في المدخلات', $validator->errors(), []);
         }
         $good = Goods::find($request['id']);
-        if (auth()->user()->store->id != $good->stores_id)
+        if (auth()->user()->store[0]->id != $good->stores_id)
             return $this->send_response(400, 'لا يمكنك تعديل بيانات هذا المنتج', [], []);
         $good->update([
             'name' => $request['name'],
@@ -117,6 +121,7 @@ class GoodsController extends Controller
         ]);
         return $this->send_response(200, 'تمت عملية التعديل بنجاح', [], Goods::find($request['id']));
     }
+    // حذف البضائع
      public function deleteGoods(Request $request)
     {
         $request = $request->json()->all();
@@ -127,7 +132,7 @@ class GoodsController extends Controller
             return $this->send_response(400, 'خطأ في المدخلات', $validator->errors(), []);
         }
         $good = Goods::find($request['id']);
-        if (auth()->user()->store->id != $good->stores_id)
+        if (auth()->user()->store[0]->id != $good->stores_id)
             return $this->send_response(400, 'لا يمكنك حذف هذا المنتج', [], []);
         $good->delete();
         return $this->send_response(200, 'تمت عملية الحذف بنجاح', [], []);

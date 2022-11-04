@@ -13,9 +13,8 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('debt_records', function (Blueprint $table) {
-            $table->id();
-            $table->timestamps();
+         Schema::table('users', function (Blueprint $table) {
+            $table->integer('activation');
         });
     }
 
@@ -26,6 +25,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('debt_records');
+        //
     }
 };

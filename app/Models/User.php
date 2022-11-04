@@ -24,7 +24,6 @@ class User extends Authenticatable
     //     'password',
     // ];
      protected $guarded = [];
-    //   protected $with = ['store'];
 
     /**
      * The attributes that should be hidden for serialization.
@@ -47,6 +46,6 @@ class User extends Authenticatable
     protected $with = ['store'];
 
     public function store(){
-        return $this->hasOne(Store::class,'user_id');
+        return $this->hasMany(Store::class,'user_id');
     }
 }
