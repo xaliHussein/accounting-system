@@ -40,6 +40,7 @@ Route::middleware(['auth:api'])->group(function () {
 
     route::get('get_sales_stats',[SalesController::class,'getSalesStats']);
     route::get('get_sales',[SalesController::class,'getSales']);
+    route::get('get_sale_goods',[SalesController::class,'getSalesGoods']);
     route::post('add_sales',[SalesController::class,'addSales']);
     route::put('edit_sales',[SalesController::class,'EditSales']);
     route::put('retrive_goods',[SalesController::class,'retriveGoods']);

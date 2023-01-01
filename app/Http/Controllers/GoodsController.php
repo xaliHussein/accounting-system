@@ -23,7 +23,7 @@ class GoodsController extends Controller
             'quantity' => 'required|numeric',
             'buy_price' => 'required|numeric',
             'sale_price' => 'required|numeric',
-            'product_code' => 'unique:goods,product_code',
+            'product_code' => 'required|unique:goods,product_code',
             'company' => 'max:255',
         ]);
         if ($validator->fails()) {
@@ -135,6 +135,6 @@ class GoodsController extends Controller
         if (auth()->user()->store[0]->id != $good->stores_id)
             return $this->send_response(400, 'لا يمكنك حذف هذا المنتج', [], []);
         $good->delete();
-        return $this->send_response(200, 'تمت عملية الحذف بنجاح', [], []);
+        return $this->send_response(200, 'تمت عملية الحذف بنجاح', [], $good);
     }
 }

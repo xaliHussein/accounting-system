@@ -11,6 +11,7 @@ use App\Traits\Pagination;
 use App\Traits\SendResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Validator;
 
 class UsersController extends Controller
@@ -150,7 +151,7 @@ class UsersController extends Controller
         if (!isset($_GET['skip']))
             $_GET['skip'] = 0;
         if (!isset($_GET['limit']))
-            $_GET['limit'] = 9;
+            $_GET['limit'] = 10;
         $res = $this->paging($users,  $_GET['skip'],  $_GET['limit']);
         return $this->send_response(200, 'تم جلب المستخدمين بنجاح', [], $res["model"], null, $res["count"]);
     }

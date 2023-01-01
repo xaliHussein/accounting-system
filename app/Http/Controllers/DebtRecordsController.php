@@ -47,7 +47,7 @@ class DebtRecordsController extends Controller
                 $_GET['skip'] = 0;
             if (!isset($_GET['limit']))
                 $_GET['limit'] = 10;
-            $res = $this->paging($goods,  $_GET['skip'],  $_GET['limit']);
+            $res = $this->paging($goods->orderBy("created_at", "desc"),  $_GET['skip'],  $_GET['limit']);
             if ($goods) {
                 return $this->send_response(200, 'تم جلب الفواتير بنجاح', [], $res["model"], null, $res["count"]);
             } else {
@@ -83,7 +83,7 @@ class DebtRecordsController extends Controller
             $_GET['skip'] = 0;
         if (!isset($_GET['limit']))
             $_GET['limit'] = 10;
-        $res = $this->paging($Sales,  $_GET['skip'],  $_GET['limit']);
+        $res = $this->paging($Sales->orderBy("created_at", "desc"),  $_GET['skip'],  $_GET['limit']);
         return $this->send_response(200, 'تم جلب البضاعة بنجاح', [], $res["model"], null, $res["count"]);
     }
     // دفع الديون على العميل

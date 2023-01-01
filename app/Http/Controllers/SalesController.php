@@ -203,4 +203,38 @@ class SalesController extends Controller
         $resulte=[$data,$chart];
         return $this->send_response(200,'تم احضار احصائيات',[],$resulte);
     }
+    // احضار جدول بضائع لاختيار منها في خانة بيع
+     public function getSalesGoods()
+    {
+        $goods = Goods::where("stores_id", auth()->user()->store[0]->id);
+        if (isset($_GET['filter'])) {
+            $filter = json_decode($_GET['filter']);
+            // return $filter;
+            $goods->where($filter->name, $filter->value);
+        }
+        if (isset($_GET['query'])) {
+            $goods->where(function ($q) {
+                $columns = Schema::getColumnListing('goods');
+                foreach ($columns as $column) {
+                    $q->orWhere($column, 'LIKE', '%' . $_GET['query'] . '%');
+                }
+            });
+        }
+        if (isset($_GET)) {
+            foreach ($_GET as $key => $value) {
+                if ($key == 'skip' || $key == 'limit' || $key == 'query' || $key == 'filter') {
+                    continue;
+                } else {
+                    $sort = $value == 'true' ? 'desc' : 'asc';
+                    $goods->orderBy($key,  $sort);
+                }
+            }
+        }
+        if (!isset($_GET['skip']))
+            $_GET['skip'] = 0;
+        if (!isset($_GET['limit']))
+            $_GET['limit'] = 10;
+        $res = $this->paging($goods->orderBy("created_at", "desc"),  $_GET['skip'],  $_GET['limit']);
+        return $this->send_response(200, 'تم جلب البضاعة بنجاح', [], $res["model"], null, $res["count"]);
+    }
 }
